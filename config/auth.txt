@@ -1,0 +1,301 @@
+<?php
+include("DB_conn.php"); 
+
+  class Amir{
+
+    public function UsersDataInsert($conn, $data){
+      $fname = $data['fname'];
+      $lname = $data['lname'];
+      $email = $data['email'];
+      $password = $data['password'];
+      $date = date("l jS \of F Y h:i:s A");
+
+      if(!empty($fname) && !empty($lname) && !empty($email) && !empty($password)){
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $sql = mysqli_query($conn, "SELECT * FROM users WHERE email = '{$email}'");
+
+          if (mysqli_num_rows($sql) > 0) {
+            return "$email - This email already exist!";
+          }else{
+
+            $ran_id = rand(time(), 100000000);
+
+            $insert_query = mysqli_query($conn, "INSERT INTO `users` (`user_unique_id`, `fname`, `lname`, `email`, `password`, `date`) VALUES ({$ran_id}, '{$fname}','{$lname}', '{$email}', '{$password}', '{$date}')");
+
+            if ($insert_query) {
+              $select_sql2 = mysqli_query($conn, "SELECT * FROM users WHERE email = '{$email}'");
+
+              if (mysqli_num_rows($select_sql2) > 0) {
+                // $results = mysqli_fetch_assoc($select_sql2);
+                // $_SESSION['user_unique_id'] = $results['user_unique_id'];
+
+                return "Your Account Created Successfully!";
+              } else {
+                return "This email address not Exist!";
+              }
+            }
+          }
+        }
+        return "Please Create an Accounts";
+      }else{
+        return "Please Create an Accounts";
+      }
+
+    }
+
+    public function dis($conn){
+      session_start();
+      $query = "SELECT * FROM `users`";
+      if(mysqli_query($conn, $query)){
+        $result = mysqli_query($conn, $query);
+        $userInfo = mysqli_fetch_assoc($result);
+        if($userInfo){
+          $_SESSION['email'] = $userInfo['email'];
+          $_SESSION['user_unique_id'] = $userInfo['user_unique_id'];
+        }
+      }
+    }
+
+    public function insertPost($conn, $data){
+      $user_unique_id = 11111;
+      $post_title = $_SESSION['email'];
+      $post_description = $data['post_description'];
+
+      $query = "INSERT INTO `posts` (`user_unique_id`, `post_title`, `post_content`) VALUES ($user_unique_id,'$post_title','$post_description')";
+
+      if(mysqli_query($conn, $query)){
+        header("location: generate.php");
+        // echo $_SESSION['user_unique_id'];
+      }
+    }
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+?>
+
+
+new
+
+<?php
+include("DB_conn.php"); 
+
+  class Amir{
+
+    public function UsersDataInsert($conn, $data){
+      $fname = $data['fname'];
+      $lname = $data['lname'];
+      $email = $data['email'];
+      $password = $data['password'];
+      $date = date("l jS \of F Y h:i:s A");
+
+      $query1 = mysqli_query($conn, "SELECT * FROM users WHERE email = '{$email}'");
+
+      if(mysqli_num_rows($query1) > 0){
+        return "$email - This email already exist!";
+      }else{
+      $ran_id = rand(time(), 100000000);
+        
+        $insert_query = mysqli_query($conn, "INSERT INTO `users` (`user_unique_id`, `fname`, `lname`, `email`, `password`, `date`) VALUES ({$ran_id}, '{$fname}','{$lname}', '{$email}', '{$password}', '{$date}')");
+
+        if($insert_query){
+          $selected_query = mysqli_query($conn, "SELECT * FROM users WHERE user_unique_id = {$ran_id}");
+          if($selected_query){
+            session_start();
+            $result = mysqli_fetch_assoc($selected_query);
+            $_SESSION['user_unique_id'] = $result['user_unique_id']; 
+
+            header("location: template.php");
+          }else{
+            return "Something Wrong";
+          }
+        }
+      }
+
+    }
+
+
+    public function sinIn($conn, $deta){
+      $email = $deta['log_email'];
+      $pass = $deta['log_password'];
+
+      $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' AND password='$pass'");
+      if($query){
+        header("location:template.php");
+        $quer2 = "SELECT * FROM users";
+        if(mysqli_query($conn, $quer2)){
+          $result = mysqli_query($conn, $quer2);
+          $results = mysqli_fetch_assoc($result);
+          if($results){
+            $_SESSION['user_unique_id'] = $results['user_unique_id'];
+          }
+          
+        }
+      }
+    }
+
+
+    public function insertPost($conn, $data){
+      $session = $_SESSION['user_unique_id'];
+      $post_title = $data['post_title'];
+      $post_description = $data['post_description'];
+
+      $query = "INSERT INTO `posts`(`user_unique_id`, `post_title`, `post_content`) VALUES ($session,'$post_title','$post_description')";
+
+      if(mysqli_query($conn, $query)){
+        header("location: generate.php");
+      }
+    }
+
+
+    public function selectedPostData($conn){
+      $post_unique_id = $_SESSION['user_unique_id'];
+      $query = "SELECT * FROM `posts` WHERE `user_unique_id` = {$post_unique_id}";
+
+      if(mysqli_query($conn, $query)){
+        $results = mysqli_query($conn, $query);
+        return $results;
+      }
+    }
+
+  public function logOut()
+  {
+    session_destroy();
+    session_unset();
+    header("location:login.php");
+  }
+
+
+
+  } 
+
+
+
+
+// if (isset($_POST['submit'])) {
+//   // $uer_id = $_POST['user_unique_id'];
+//   $posts = $Auth_obj->generate($conn, $uer_ids);
+
+// } else {
+//   echo 'Please Log in And Generate Your posts!';
+// }
+// $user_id = $_SESSION['user_unique_id'];
+// // $posts = $Auth_obj->generate($conn, $uer_id);
+
+
+// echo $_SESSION['users_unique_id'];
+
+// if (isset($_SESSION['user_unique_id'])) {
+ // if (isset(!empty($posts))) { 
+// if (!empty(mysqli_fetch_assoc($posts))) {
+ //} else {
+   // echo "Empty";
+  //}
+//}
+        if(isset($row)){
+
+
+
+?>
+
+              // $userID = $_SESSION['user_unique_id'];
+
+              <!-- <li><a href="./generate.php"><span>Generate</span></a></li> -->
+
+                        // $fetch = mysqli_fetch_all($result);
+        // session_start();
+        // $_SESSION['fetch'] = $fetch['user_unique_id'];
+      /* public function generate($conn, $data){
+      $post_unique_id = $data['post_unique_id'];
+      $query = "SELECT * FROM `posts` WHERE `user_unique_id` = {$post_unique_id}";
+      if(mysqli_query($conn, $query)){
+        $results = mysqli_query($conn, $query);
+                header("location: data.php");
+
+        return $results;
+        
+      }
+    }*/
+
+  /* public function selectedPostData($conn, $data)
+  {
+    $post_unique_id = $data['user_unique_id'];
+    $query = "SELECT * FROM `posts` WHERE `user_unique_id` = {$post_unique_id}";
+
+    if (mysqli_query($conn, $query)) {
+      $results = mysqli_query($conn, $query);
+      return $results;
+    }
+  }*/
+
+/*   public function new($conn, $data){
+    $email = $data['uemail'];
+    $upass = $data['upass'];
+    $query = mysqli_query($conn, "SELECT * FROM `users` WHERE `email`='$email' AND `password` ='$upass' ");
+        header('location: try.php');
+
+    if($query){
+      $query2 = mysqli_query($conn, "SELECT * FROM `users`");
+      if($query2){
+        $result = mysqli_fetch_assoc($query2);
+        session_start();
+        $_SESSION['user_unique_id'] = $result['user_unique_id'];
+      }else{
+        return "False";
+      }
+    } else {
+      return "False";
+    }
+  } */
+
+
+              // session_start();
+            // $result = mysqli_fetch_assoc($selected_query);
+            // $_SESSION['user_unique_id'] = $result['user_unique_id']; 
+  /* 
+    public function sinIn($conn, $deta){
+      $email = $deta['log_email'];
+      $pass = $deta['log_password'];
+
+      $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' AND password='$pass'");
+      if($query){
+        header("location:template.php");
+        $quer2 = "SELECT * FROM `users`";
+        if(mysqli_query($conn, $quer2)){
+          $result = mysqli_query($conn, $quer2);
+          $results = mysqli_fetch_assoc($result);
+          if($results){
+            $_SESSION['user_unique_id'] = $results['user_unique_id'];
+          }
+          
+        }
+      }
+    } 
+    */
+
+
+/*   public function disPlayUserData($conn, $id){
+      $query = "SELECT * FROM `posts` WHERE `user_unique_id` = {$id}";
+
+      if(mysqli_query($conn, $query)){
+        $querys = mysqli_query($conn, $query);
+        return $querys;
+      }
+  }
+
+  // public function test($conn){} */
